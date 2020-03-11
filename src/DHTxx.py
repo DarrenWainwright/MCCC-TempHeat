@@ -10,6 +10,7 @@
 """
 import argparse, time
 import adafruit_dht
+from Services import Sensor
 
 #TODO// - Can't seem to get this working on windows. adafruit_blinka or RPi.GPIO won't install
 import board
@@ -27,17 +28,9 @@ dhtDevice = adafruit_dht.DHT22(pin)
 
 
 while True:
-    time.sleep(2.0)
-    try:
-        # Print the values to the serial port
-        temperature_c = dhtDevice.temperature
-        temperature_f = temperature_c * (9 / 5) + 32
-        humidity = dhtDevice.humidity
-        print("Temp: {:.1f} F / {:.1f} C    Humidity: {}% "
-              .format(temperature_f, temperature_c, humidity))
- 
-    except RuntimeError as error:
-        # Errors happen fairly often, DHT's are hard to read, just keep going
-        print(error)
- 
-    
+    details = Sensor.GetDetails(dhtDevice, 5)
+    if details.Temperature_C is not None:
+        print(f"Temp {details.Temperature_C()}/C {details.Temperature_F()}/F: Humidity {details.Humidity()}")
+    else:
+        print("didn't work")
+

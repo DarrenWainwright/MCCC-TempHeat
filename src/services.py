@@ -1,6 +1,7 @@
 import time
 class Sensor(object):
 
+    # Sensor details to return
     class SensorDetail(object):
         def __init__(self, temperature_in_c, humidity):          
             self._temperature_c = temperature_in_c
@@ -18,7 +19,7 @@ class Sensor(object):
             return self._humidity
 
 
-    
+    # PArse the details from the sensor instance
     @staticmethod
     def GetDetails(sensorInstance, retries): 
         if retries == 0:
@@ -26,7 +27,7 @@ class Sensor(object):
         try:
             time.sleep(2)
             return Sensor.SensorDetail(sensorInstance.temperature, sensorInstance.humidity)           
-        except Exception as ex:
+        except Exception:
             r = retries-1
             return Sensor.GetDetails(sensorInstance, r)
         

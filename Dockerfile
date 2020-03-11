@@ -15,8 +15,8 @@ WORKDIR /app
 ADD . /app
 
 # Using pip:
-#RUN python3 -m pip install -r requirements.txt
-CMD ["python3", "temphumidity.py"]
+RUN python3 -m pip install -r requirements.txt
+CMD ["python3", "DHTxx.py", "-s", "1"]
 
 # Using pipenv:
 #RUN python3 -m pip install pipenv

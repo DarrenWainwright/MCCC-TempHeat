@@ -30,7 +30,7 @@ dhtDevice = adafruit_dht.DHT22(pin)
 while True:
     details = Sensor.GetDetails(dhtDevice, 5)
     if details.Temperature_C is not None:
-        print(f"Temp {details.Temperature_C()}/C {details.Temperature_F()}/F: Humidity {details.Humidity()}")
+        print(f"Sensor {args.sensor} | Temp {details.Temperature_C()}/C {details.Temperature_F()}/F: Humidity {details.Humidity()}")
     else:
         print("didn't work")
 

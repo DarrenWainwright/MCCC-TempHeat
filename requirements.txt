@@ -1,0 +1,3 @@
+adafruit_dht
+RPi.GPIO
+adafruit_blinka

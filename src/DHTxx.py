@@ -26,11 +26,26 @@ pin = (board.D4 if args.sensor == 1 else board.D18)
 # connect to the sensor
 dhtDevice = adafruit_dht.DHT22(pin)
 
+# difference constants
+TEMP_VARIANT = 0.25
+HUMIDITY_VARIANT = 0.25
+
+tempTracker = 0
+humidityTracker = 0
 
 while True:
-    details = Sensor.GetDetails(dhtDevice, 5)
-    if details.Temperature_C is not None:
-        print(f"Sensor {args.sensor} | Temp {details.Temperature_C()}/C {details.Temperature_F()}/F: Humidity {details.Humidity()}")
-    else:
-        print("didn't work")
+    details = Sensor.GetDHTxxDetails(dhtDevice, 5)
+    if details.Temperature_C() is not None:
+        diff = tempTracker - details.Temperature_C()
+        diff = diff if diff > 0 else diff * -1
+        if diff >= TEMP_VARIANT:
+            tempTracker = details.Temperature_C()
+            print(f"Sensor {args.sensor} | Temp {details.Temperature_C()}/c {details.Temperature_F()}/f")
+    if details.Humidity() is not None:
+        diff = humidityTracker - details.Humidity()
+        diff = diff if diff > 0 else diff * -1
+        if diff >= HUMIDITY_VARIANT:
+            humidityTracker = details.Humidity()
+            print(f"Sensor {args.sensor} | Humidity {details.Humidity()}")
+    
 

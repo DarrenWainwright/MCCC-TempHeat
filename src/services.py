@@ -21,7 +21,7 @@ class Sensor(object):
 
     # PArse the details from the sensor instance
     @staticmethod
-    def GetDetails(sensorInstance, retries): 
+    def GetDHTxxDetails(sensorInstance, retries): 
         if retries == 0:
             return Sensor.SensorDetail(None,None)
         try:
@@ -29,5 +29,5 @@ class Sensor(object):
             return Sensor.SensorDetail(sensorInstance.temperature, sensorInstance.humidity)           
         except Exception:
             r = retries-1
-            return Sensor.GetDetails(sensorInstance, r)
+            return Sensor.GetDHTxxDetails(sensorInstance, r)
         

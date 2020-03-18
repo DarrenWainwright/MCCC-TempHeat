@@ -1,4 +1,10 @@
 import time
+import uuid
+import json
+from datetime import datetime
+from azure.eventgrid import EventGridClient
+from msrest.authentication import TopicCredentials
+
 class Sensor(object):
 
     # Sensor details to return
@@ -30,4 +36,29 @@ class Sensor(object):
         except Exception:
             r = retries-1
             return Sensor.GetDHTxxDetails(sensorInstance, r)
+        
+
+class EventGrid(object):
+
+    @staticmethod
+    def PublishEvent(endpoint, subject, eventType, dataJson):
+        try:
+            credentials = TopicCredentials(
+            #TODO - get a key..
+            self.settings.EVENT_GRID_KEY
+            )
+            event_grid_client = EventGridClient(credentials)
+            event_grid_client.publish_events(
+                endpoint,
+                events=[{
+                    'id' : uuid.uuid4(),
+                    'subject' : subject,
+                    'data': json.dumps(dataJson),
+                    'event_type': eventType,
+                    'event_time': datetime.utcnow(),
+                    'data_version': 1
+                }]
+            )
+        except:
+            pass
         

@@ -1,0 +1,28 @@
+{
+    "eventGrid":{
+        "management":{            
+            "subscriptionId": "",
+            "subscriptionName":"",
+            "resourceGroupName":"",
+            "locaton":"",
+,           "topicName": ""
+        },
+        "data":{
+            "temperatureTopic":{
+                "topicEndpoint" : "",
+                "key":""
+            },
+            "humidityTopic":{
+                "topicEndpoint" : "",
+                "key":""
+            }
+        }        
+    }
+}
+
+RESOURCE_GROUP_NAME = 'gridResourceGroup'
+TOPIC_NAME = 'gridTopic1234'
+LOCATION = 'westus2'
+SUBSCRIPTION_ID = 'YOUR_SUBSCRIPTION_ID'
+SUBSCRIPTION_NAME = 'gridSubscription'
+REQUEST_BIN_URL = 'YOUR_REQUEST_BIN_URL'

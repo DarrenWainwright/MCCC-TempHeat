@@ -1,0 +1,12 @@
+{
+    "eventGrid":{
+        "temperatureTopic":{
+            "topicEndpoint" : "",
+            "key":""
+        },
+        "humidityTopic":{
+            "topicEndpoint" : "",
+            "key":""
+        }
+    }
+}

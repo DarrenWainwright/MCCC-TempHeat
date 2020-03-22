@@ -1,11 +1,14 @@
 {
     "eventGrid":{
-        "management":{            
-            "subscriptionId": "",
+        "management":{  
+            "azureClientId":"",
+            "azureClientSecret":"",
+            "azureTenantId":"",
+            "subscriptionId":"",
             "subscriptionName":"",
             "resourceGroupName":"",
             "locaton":"",
-            "topicName": ""
+            "topicNames" :[]
         },
         "data":{
             "temperatureTopic":{

@@ -1,11 +1,12 @@
-import time
-import uuid
-import json
+import time, uuid, json
 from datetime import datetime
+
+from azure.common.credentials import ServicePrincipalCredentials
+from azure.mgmt.eventgrid import EventGridManagementClient
+from azure.mgmt.eventgrid.models import Topic
+
 from azure.eventgrid import EventGridClient
 from msrest.authentication import TopicCredentials
-from azure.mgmt.resource import ResourceManagementClient
-from azure.mgmt.eventgrid import EventGridManagementClient
 
 class Sensor(object):
 
@@ -41,22 +42,55 @@ class Sensor(object):
         
 
 class EventGrid(object):
+        
 
     @staticmethod
-    def PublishEvent(endpoint, subject, eventType, dataJson):
-        try:
-            
-            event_client = EventGridManagementClient(None, None)
+    #Returns dictionary of topicName/key
+    def CreateOrUpdateTopics(mgmtJson):
 
-            # create a custom topic
-        
-            event_client.topics.create_or_update(RESOURCE_GROUP_NAME, TOPIC_NAME, LOCATION)
+        subscription_id = f"{mgmtJson['subscriptionId']}"
 
-
-            credentials = TopicCredentials(
-            #TODO - get a key..
-            self.settings.EVENT_GRID_KEY
+        credentials = ServicePrincipalCredentials(
+            client_id=mgmtJson["azureClientId"],
+            secret=mgmtJson["azureClientSecret"],
+            tenant=mgmtJson["azureTenantId"]
             )
+
+        print("\nCreate event grid management client")
+        event_grid_client = EventGridManagementClient(credentials, subscription_id)
+        
+        returnDict = []
+        for topic in mgmtJson["topicNames"]:
+            print(f'\nCreating EventGrid topic {topic}')
+            topic_result_poller = event_grid_client.topics.create_or_update(mgmtJson["resourceGroupName"],
+                                                                     topic,
+                                                                     Topic(
+                                                                         location=mgmtJson["location"],
+                                                                         tags={'createdBy': 'MCCC'}
+                                                                     ))
+            # Blocking call            
+            topic_result = topic_result_poller.result()  # type: Topic
+            print(topic_result)
+            print(f"\nTopic {topic} Created ")
+            keys = event_grid_client.topics.list_shared_access_keys(
+                        mgmtJson["resourceGroupName"],
+                        topic
+                    ) 
+
+            returnDict[topic] = {}
+            returnDict[topic]["topicName"] = topic_result.name
+            returnDict[topic]["topicKey"] = keys.key1
+            returnDict[topic]["topicEndpoint"] = topic_result.endpoint
+        
+        print("\nAll topics created")
+        return returnDict
+            
+
+
+    @staticmethod
+    def PublishEvent(endpoint, key, subject, eventType, dataJson):
+        try:
+            credentials = TopicCredentials(key)
             event_grid_client = EventGridClient(credentials)
             event_grid_client.publish_events(
                 endpoint,

@@ -1,12 +1,21 @@
 {
     "eventGrid":{
-        "temperatureTopic":{
-            "topicEndpoint" : "",
-            "key":""
+        "management":{            
+            "subscriptionId": "",
+            "subscriptionName":"",
+            "resourceGroupName":"",
+            "locaton":"",
+            "topicName": ""
         },
-        "humidityTopic":{
-            "topicEndpoint" : "",
-            "key":""
-        }
+        "data":{
+            "temperatureTopic":{
+                "topicEndpoint" : "",
+                "key":""
+            },
+            "humidityTopic":{
+                "topicEndpoint" : "",
+                "key":""
+            }
+        }        
     }
 }

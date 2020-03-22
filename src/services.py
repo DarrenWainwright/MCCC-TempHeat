@@ -4,6 +4,8 @@ import json
 from datetime import datetime
 from azure.eventgrid import EventGridClient
 from msrest.authentication import TopicCredentials
+from azure.mgmt.resource import ResourceManagementClient
+from azure.mgmt.eventgrid import EventGridManagementClient
 
 class Sensor(object):
 
@@ -43,6 +45,14 @@ class EventGrid(object):
     @staticmethod
     def PublishEvent(endpoint, subject, eventType, dataJson):
         try:
+            
+            event_client = EventGridManagementClient(None, None)
+
+            # create a custom topic
+        
+            event_client.topics.create_or_update(RESOURCE_GROUP_NAME, TOPIC_NAME, LOCATION)
+
+
             credentials = TopicCredentials(
             #TODO - get a key..
             self.settings.EVENT_GRID_KEY

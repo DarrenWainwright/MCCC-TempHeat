@@ -1,8 +1,0 @@
-version: '2.1'
-
-services:
-  temphumidity:
-    image: temphumidity
-    build: .
-    ports:
-      - 3010:3010

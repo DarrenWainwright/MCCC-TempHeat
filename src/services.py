@@ -59,26 +59,25 @@ class EventGrid(object):
         
 
     @staticmethod
-    #Returns dictionary of topicName/key
-    def CreateOrUpdateTopics(mgmtJson):
-
-        subscription_id = f"{mgmtJson['subscriptionId']}"
+    # Fetches Event Grid Topic info. 
+    # If the topics do not exist they will be created
+    def GetEventGridTopics(tenantId, subscriptionId, resourceGroup, gridLocation, clientId, cientSecret, topicNames):
 
         credentials = ServicePrincipalCredentials(
-            client_id=mgmtJson["azureClientId"],
-            secret=mgmtJson["azureClientSecret"],
-            tenant=mgmtJson["azureTenantId"]
+            client_id=clientId,
+            secret=cientSecret,
+            tenant=tenantId
             )
 
-        event_grid_client = EventGridManagementClient(credentials, subscription_id)
+        event_grid_client = EventGridManagementClient(credentials, subscriptionId)
         
         returnDict = {}
-        for topic in mgmtJson["topicNames"]:
+        for topic in topicNames:
             print(f'Create Event Grid Topic {topic}')
-            topic_result_poller = event_grid_client.topics.create_or_update(mgmtJson["resourceGroupName"],
+            topic_result_poller = event_grid_client.topics.create_or_update(resourceGroup,
                                                                      topic,
                                                                      Topic(
-                                                                         location=mgmtJson["location"],
+                                                                         location=gridLocation,
                                                                          tags={'createdBy': 'MCCC'}
                                                                      ))
             # Blocking call            
@@ -86,7 +85,7 @@ class EventGrid(object):
             print(topic_result)
             print(f"Topic {topic} Created ")
             keys = event_grid_client.topics.list_shared_access_keys(
-                        mgmtJson["resourceGroupName"],
+                        resourceGroup,
                         topic
                     )             
             rTopic = EventGrid.MCCCTopic(topic, keys.key1, topic_result.endpoint)
@@ -100,7 +99,7 @@ class EventGrid(object):
     def PublishEvent(endpoint, key, subject, eventType, dataJson):
         try:
             credentials = TopicCredentials(key)
-            event_grid_client = EventGridClient(credentials)
+            event_grid_client = EventGridClient(credentials)            
             event_grid_client.publish_events(
                 endpoint,
                 events=[{
@@ -112,6 +111,7 @@ class EventGrid(object):
                     'data_version': 1
                 }]
             )
-        except:
+        except Exception as ex:
+            print(ex)
             pass
         

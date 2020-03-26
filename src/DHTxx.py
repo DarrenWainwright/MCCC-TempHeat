@@ -33,7 +33,14 @@ with open(args.config) as f:
 
 # Initiate the event grid topics
 print("Initiate Event Grid topics")
-eg_topics = Services.EventGrid.CreateOrUpdateTopics(config["eventGrid"]["management"])
+mgmt = config["eventGrid"]["management"]
+eg_topics = Services.EventGrid.GetEventGridTopics(mgmt["azureTenantId"]
+                                                    ,mgmt["subscriptionId"]
+                                                    ,mgmt["resourceGroupName"]
+                                                    ,mgmt["location"]
+                                                    ,mgmt["azureClientId"]
+                                                    ,mgmt["azureClientSecret"]
+                                                    ,mgmt["topicNames"])
 
 # connect to the sensor
 print("Connect to sensor")

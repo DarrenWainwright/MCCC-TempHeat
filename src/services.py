@@ -7,6 +7,11 @@ from azure.mgmt.eventgrid.models import Topic
 
 from azure.eventgrid import EventGridClient
 from msrest.authentication import TopicCredentials
+from azure.eventgrid.models import EventGridEvent
+
+
+#import logging
+#logging.basicConfig(level=logging.DEBUG)
 
 class Sensor(object):
 
@@ -73,7 +78,7 @@ class EventGrid(object):
         
         returnDict = {}
         for topic in topicNames:
-            print(f'Create Event Grid Topic {topic}')
+            print(f'Creating Event Grid Topic {topic}...')
             topic_result_poller = event_grid_client.topics.create_or_update(resourceGroup,
                                                                      topic,
                                                                      Topic(
@@ -84,11 +89,12 @@ class EventGrid(object):
             topic_result = topic_result_poller.result()  # type: Topic
             print(topic_result)
             print(f"Topic {topic} Created ")
+            endpoint = f"{topic}.{gridLocation}-1.eventgrid.azure.net"
             keys = event_grid_client.topics.list_shared_access_keys(
                         resourceGroup,
                         topic
                     )             
-            rTopic = EventGrid.MCCCTopic(topic, keys.key1, topic_result.endpoint)
+            rTopic = EventGrid.MCCCTopic(topic, keys.key1, endpoint)
 
             returnDict[topic] = rTopic
 
@@ -98,20 +104,26 @@ class EventGrid(object):
     @staticmethod
     def PublishEvent(endpoint, key, subject, eventType, dataJson):
         try:
+            events = []
+            for i in range(1):
+                events.append(EventGridEvent(
+                    id=uuid.uuid4(),
+                    subject=subject,
+                    data=dataJson,
+                    event_type=eventType,
+                    event_time=datetime.utcnow(),
+                    data_version=1.0
+                ))
+
             credentials = TopicCredentials(key)
-            event_grid_client = EventGridClient(credentials)            
+            event_grid_client = EventGridClient(credentials)
             event_grid_client.publish_events(
                 endpoint,
-                events=[{
-                    'id' : uuid.uuid4(),
-                    'subject' : subject,
-                    'data': json.dumps(dataJson),
-                    'event_type': eventType,
-                    'event_time': datetime.utcnow(),
-                    'data_version': 1
-                }]
+                events=events
             )
+            print("Published event") 
         except Exception as ex:
             print(ex)
+            #TODO/ deal with this....
             pass
         

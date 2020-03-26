@@ -42,6 +42,20 @@ class Sensor(object):
         
 
 class EventGrid(object):
+
+    class MCCCTopic(object):
+        def __init__(self, topic, key, endpoint):
+            print(f"MCCC Topic. Name: {topic}, Key:{key}, Endpoint:{endpoint}")
+            self._name = topic
+            self._key = key
+            self._endpoint = endpoint
+
+        def Name(self):
+            return self._name
+        def Key(self):
+            return self._key
+        def Endpoint(self):
+            return self._endpoint
         
 
     @staticmethod
@@ -56,12 +70,11 @@ class EventGrid(object):
             tenant=mgmtJson["azureTenantId"]
             )
 
-        print("\nCreate event grid management client")
         event_grid_client = EventGridManagementClient(credentials, subscription_id)
         
-        returnDict = []
+        returnDict = {}
         for topic in mgmtJson["topicNames"]:
-            print(f'\nCreating EventGrid topic {topic}')
+            print(f'Create Event Grid Topic {topic}')
             topic_result_poller = event_grid_client.topics.create_or_update(mgmtJson["resourceGroupName"],
                                                                      topic,
                                                                      Topic(
@@ -71,21 +84,17 @@ class EventGrid(object):
             # Blocking call            
             topic_result = topic_result_poller.result()  # type: Topic
             print(topic_result)
-            print(f"\nTopic {topic} Created ")
+            print(f"Topic {topic} Created ")
             keys = event_grid_client.topics.list_shared_access_keys(
                         mgmtJson["resourceGroupName"],
                         topic
-                    ) 
+                    )             
+            rTopic = EventGrid.MCCCTopic(topic, keys.key1, topic_result.endpoint)
 
-            returnDict[topic] = {}
-            returnDict[topic]["topicName"] = topic_result.name
-            returnDict[topic]["topicKey"] = keys.key1
-            returnDict[topic]["topicEndpoint"] = topic_result.endpoint
-        
-        print("\nAll topics created")
+            returnDict[topic] = rTopic
+
         return returnDict
             
-
 
     @staticmethod
     def PublishEvent(endpoint, key, subject, eventType, dataJson):

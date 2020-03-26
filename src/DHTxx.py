@@ -21,14 +21,13 @@ parser.add_argument("--sensor", "-s", type=int, required=True, choices=[1,2], he
 parser.add_argument("--config", "-c", type=str, required=True, help="Configuration full name, i.e myconfig.json")
 args = parser.parse_args()
 
-print(args)
-print("Starting.")
+print(f"DHTxx Sensor #{args.sensor} started")
 
 # assign GPIO pin
 pin = (board.D4 if args.sensor == 1 else board.D18)
 
 # load config
-print("Load config")
+print(f"Loding config file {args.config}")
 with open(args.config) as f:
   config = json.load(f)
 
@@ -37,7 +36,7 @@ print("Initiate Event Grid topics")
 eg_topics = Services.EventGrid.CreateOrUpdateTopics(config["eventGrid"]["management"])
 
 # connect to the sensor
-print("Connect to sensor..")
+print("Connect to sensor")
 dhtDevice = adafruit_dht.DHT22(pin)
 
 # difference constants
@@ -47,7 +46,7 @@ HUMIDITY_VARIANT = 0.25
 tempTracker = 0
 humidityTracker = 0
 
-print("\nBegin polling sensor..")
+print("Listening to the sensor...")
 while True:
     details = Services.Sensor.GetDHTxxDetails(dhtDevice, 5)
     if details.Temperature_C() is not None:
@@ -61,10 +60,9 @@ while True:
             data['temperature_c'] =  details.Temperature_C()
             data['temperature_f'] =  details.Temperature_F()
 
-            topicData = eg_topics[eg_topics.index("Temperature")]
-
-            Services.EventGrid.PublishEvent(topicData["topicEndpoint"], topicData["topicKey"], "Temperature Changed Event", "TemperatureChanged", data)
-            print(f"Sensor {args.sensor} | Temp {details.Temperature_C()}/c {details.Temperature_F()}/f")
+            topicData = eg_topics["Temperature"]
+            Services.EventGrid.PublishEvent(topicData.Endpoint(), topicData.Key(), "Temperature Changed Event", "TemperatureChangedEvent", data)
+            print(f"Temperature Sensor {args.sensor} | Temp {details.Temperature_C()}/c {details.Temperature_F()}/f")
     if details.Humidity() is not None:
         diff = humidityTracker - details.Humidity()
         diff = diff if diff > 0 else diff * -1
@@ -76,9 +74,9 @@ while True:
             data['temperature_c'] =  details.Temperature_C()
             data['temperature_f'] =  details.Temperature_F()
 
-            topicData = eg_topics[eg_topics.index("Humidity")]
+            topicData = eg_topics["Humidity"]
 
-            Services.EventGrid.PublishEvent(topicData["topicEndpoint"], topicData["topicKey"], "Temperature Changed Event", "TemperatureChanged", data)
-            print(f"Sensor {args.sensor} | Humidity {details.Humidity()}")
+            Services.EventGrid.PublishEvent(topicData.Endpoint(), topicData.Key(), "Humidity Changed Event", "HumidityChangedEvent", data)
+            print(f"Humidity Sensor {args.sensor} | Humidity {details.Humidity()}")
     
 

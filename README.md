@@ -17,7 +17,11 @@ The following Python packages will be required.
 
 Create a copy of the config file and add your own settings. The file name is required when running the code.
 
-python3 DHTxx.py -s 1 -c prodconfig.cfg
+Arguments:
+- -s or --sensor | accepts 1 or 2
+- -c or --config | full filename of your config file
+
+python3 DHTxx.py -s 1 -c prodconfig.json
 
 
 

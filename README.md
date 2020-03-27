@@ -13,6 +13,15 @@ The following Python packages will be required.
 - pip3 install RPi.GPIO
 - pip3 install-Adafruit-Blinka
 
+## Running
+
+Create a copy of the config file and add your own settings. The file name is required when running the code.
+
+python3 DHTxx.py -s 1 -c prodconfig.cfg
+
+
+
+
 ### Some random notes:
 
 The code has been written to target the DHT22 and DHT11 temperature sensors. 

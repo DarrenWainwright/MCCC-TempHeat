@@ -1,4 +1,4 @@
-# MCCC_TempHeat
+# Mother Cluckers Coop Control - Temp & Humidity module
 This is my first Python program. I've written it as part of a personal project to expand my skills & knowledge.
 
 The aim of this component is to capture changes in temperature and humidity then publish the results to an Azure Event Grid.

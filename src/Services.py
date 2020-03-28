@@ -76,26 +76,37 @@ class EventGrid(object):
 
         event_grid_client = EventGridManagementClient(credentials, subscriptionId)
         
+        # list of current topics for this RG
+        pagedTopics = event_grid_client.topics.list_by_resource_group(resourceGroup)
+
         returnDict = {}
         for topic in topicNames:
-            print(f'Creating Event Grid Topic {topic}...')
-            topic_result_poller = event_grid_client.topics.create_or_update(resourceGroup,
-                                                                     topic,
-                                                                     Topic(
-                                                                         location=gridLocation,
-                                                                         tags={'createdBy': 'MCCC'}
-                                                                     ))
-            # Blocking call            
-            topic_result = topic_result_poller.result()  # type: Topic
-            print(topic_result)
-            print(f"Topic {topic} Created ")
+            print(f"Checking for existence of topic {topic}")
+            p_topic = None 
+            for paged_topic in pagedTopics:
+                if topic == paged_topic.name:
+                    p_topic = paged_topic
+                    break        
+            
+            if p_topic == None:
+                print(f"Topic {topic} does not exist. Creating now...")                
+                topic_result_poller = event_grid_client.topics.create_or_update(resourceGroup,
+                                                                        topic,
+                                                                        Topic(
+                                                                            location=gridLocation,
+                                                                            tags={'createdBy': 'MCCC'}
+                                                                        ))
+                # Blocking call            
+                topic_result = topic_result_poller.result()  # type: Topic
+                print(topic_result)
+                print(f"Topic {topic} Created ")                
+            else:
+                print(f"Topic {topic} already exists.")
+            
+            key = event_grid_client.topics.list_shared_access_keys(resourceGroup,topic).key1   
             endpoint = f"{topic}.{gridLocation}-1.eventgrid.azure.net"
-            keys = event_grid_client.topics.list_shared_access_keys(
-                        resourceGroup,
-                        topic
-                    )             
-            rTopic = EventGrid.MCCCTopic(topic, keys.key1, endpoint)
-
+            key = event_grid_client.topics.list_shared_access_keys(resourceGroup,topic).key1             
+            rTopic = EventGrid.MCCCTopic(topic, key, endpoint)
             returnDict[topic] = rTopic
 
         return returnDict

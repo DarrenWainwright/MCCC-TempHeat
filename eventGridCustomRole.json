@@ -1,0 +1,23 @@
+{
+  "properties": {
+      "roleName": "DW.EventGrid.Topics.Create",
+      "description": "Role that allows daemon scripts to create Event Grid Topics",
+      "assignableScopes": [
+          "/subscriptions/50d3ccf1-b501-43d1-9a85-9361f435b99c/resourceGroups/MCCC-RG"
+      ],
+      "permissions": [
+          {
+              "actions": [
+                  "Microsoft.EventGrid/domains/topics/read",
+                  "Microsoft.EventGrid/domains/topics/write",
+                  "Microsoft.EventGrid/topics/listKeys/action",
+                  "Microsoft.EventGrid/topics/read",
+                  "Microsoft.EventGrid/topics/write"
+              ],
+              "notActions": [],
+              "dataActions": [],
+              "notDataActions": []
+          }
+      ]
+  }
+}

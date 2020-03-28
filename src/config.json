@@ -1,0 +1,14 @@
+{
+    "eventGrid":{
+        "management":{  
+            "azureClientId":"",
+            "azureClientSecret":"",
+            "azureTenantId":"",
+            "subscriptionId":"",
+            "subscriptionName":"",
+            "resourceGroupName":"",
+            "locaton":"",
+            "topicNames" :[]
+        }
+    }
+}

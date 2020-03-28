@@ -26,6 +26,23 @@ print(f"DHTxx Sensor #{args.sensor} started")
 # assign GPIO pin
 pin = (board.D4 if args.sensor == 1 else board.D18)
 
+# connect to the sensor
+print("Connecting to sensor..")
+dhtDevice = adafruit_dht.DHT22(pin)
+
+# Wait until it is connected before continuing
+connected = False
+while not connected:
+    time.sleep(2)
+    try:        
+        if dhtDevice.measure() == None:
+            connected = True
+    except Exception as identifier:
+        print("Waiting for sensor..")
+        pass
+
+print("Sensor detected. Continuing.")
+
 # load config
 print(f"Loding config file {args.config}")
 with open(args.config) as f:
@@ -42,9 +59,8 @@ eg_topics = Services.EventGrid.GetEventGridTopics(mgmt["azureTenantId"]
                                                     ,mgmt["azureClientSecret"]
                                                     ,mgmt["topicNames"])
 
-# connect to the sensor
-print("Connect to sensor")
-dhtDevice = adafruit_dht.DHT22(pin)
+
+
 
 # difference constants
 TEMP_VARIANT = 0.25

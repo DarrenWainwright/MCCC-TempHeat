@@ -18,6 +18,7 @@ import board
 # setup & parse input parameters
 parser = argparse.ArgumentParser()
 parser.add_argument("--sensor", "-s", type=int, required=True, choices=[1,2], help="Sensor number. Supported values are 1 or 2")
+parser.add_argument("--name", "-n", type=str, required=True, help="Sensors name")
 parser.add_argument("--config", "-c", type=str, required=True, help="Configuration full name, i.e myconfig.json")
 args = parser.parse_args()
 
@@ -80,6 +81,7 @@ while True:
             # Publish Event
             data = {}
             data['sensor_id'] = args.sensor
+            data['name'] = args.name
             data['temperature_c'] =  details.Temperature_C()
             data['temperature_f'] =  details.Temperature_F()
             print("Temperature Changed")
@@ -95,6 +97,7 @@ while True:
             # Publish Event
             data = {}
             data['sensor_id'] = args.sensor
+            data['name'] = args.name
             data['humidity'] =  details.Humidity()
             print("Humidity Changed")
             topicData = eg_topics["Humidity"]

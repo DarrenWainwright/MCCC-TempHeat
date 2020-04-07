@@ -1,13 +1,13 @@
 {
     "eventGrid":{
+        "enablePublish":false,
         "management":{  
             "azureClientId":"",
             "azureClientSecret":"",
             "azureTenantId":"",
             "subscriptionId":"",
-            "subscriptionName":"",
             "resourceGroupName":"",
-            "locaton":"",
+            "location":"",
             "topicNames" :[]
         }
     }

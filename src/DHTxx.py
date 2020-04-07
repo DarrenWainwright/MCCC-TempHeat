@@ -18,6 +18,7 @@ import board
 # setup & parse input parameters
 parser = argparse.ArgumentParser()
 parser.add_argument("--sensor", "-s", type=int, required=True, choices=[1,2], help="Sensor number. Supported values are 1 or 2")
+parser.add_argument("--name", "-n", type=str, required=True, help="Sensors name")
 parser.add_argument("--config", "-c", type=str, required=True, help="Configuration full name, i.e myconfig.json")
 args = parser.parse_args()
 
@@ -25,6 +26,23 @@ print(f"DHTxx Sensor #{args.sensor} started")
 
 # assign GPIO pin
 pin = (board.D4 if args.sensor == 1 else board.D18)
+
+# connect to the sensor
+print("Connecting to sensor..")
+dhtDevice = adafruit_dht.DHT22(pin)
+
+# Wait until it is connected before continuing
+connected = False
+while not connected:
+    time.sleep(2)
+    try:        
+        if dhtDevice.measure() == None:
+            connected = True
+    except Exception as identifier:
+        print("Waiting for sensor..")
+        pass
+
+print("Sensor detected. Continuing.")
 
 # load config
 print(f"Loding config file {args.config}")
@@ -42,9 +60,8 @@ eg_topics = Services.EventGrid.GetEventGridTopics(mgmt["azureTenantId"]
                                                     ,mgmt["azureClientSecret"]
                                                     ,mgmt["topicNames"])
 
-# connect to the sensor
-print("Connect to sensor")
-dhtDevice = adafruit_dht.DHT22(pin)
+publish = config["eventGrid"]["enablePublish"]
+
 
 # difference constants
 TEMP_VARIANT = 0.25
@@ -64,12 +81,14 @@ while True:
             # Publish Event
             data = {}
             data['sensor_id'] = args.sensor
+            data['name'] = args.name
             data['temperature_c'] =  details.Temperature_C()
             data['temperature_f'] =  details.Temperature_F()
             print("Temperature Changed")
             topicData = eg_topics["Temperature"]
-            print(f"Publish {topicData.Name()} Topic Data: Endpoint = {topicData.Endpoint()} | Key = {topicData.Key()} | Data = {data}")
-            Services.EventGrid.PublishEvent(topicData.Endpoint(), topicData.Key(), "Temperature Changed Event", "TemperatureChangedEvent", data)
+            if publish == True:
+                print(f"Publish {topicData.Name()} Topic Data: Endpoint = {topicData.Endpoint()} | Key = {topicData.Key()} | Data = {data}")
+                Services.EventGrid.PublishEvent(topicData.Endpoint(), topicData.Key(), "Temperature Changed Event", "TemperatureChangedEvent", data)
             print(f"Temperature Sensor {args.sensor} | Temp {details.Temperature_C()}/c {details.Temperature_F()}/f")
     if details.Humidity() is not None:
         diff = humidityTracker - details.Humidity()
@@ -79,11 +98,13 @@ while True:
             # Publish Event
             data = {}
             data['sensor_id'] = args.sensor
+            data['name'] = args.name
             data['humidity'] =  details.Humidity()
             print("Humidity Changed")
             topicData = eg_topics["Humidity"]
-            print(f"Publish {topicData.Name()} Topic Data: Endpoint = {topicData.Endpoint()} | Key = {topicData.Key()} | Data = {data}")           
-            Services.EventGrid.PublishEvent(topicData.Endpoint(), topicData.Key(), "Humidity Changed Event", "HumidityChangedEvent", data)
+            if publish == True:
+                print(f"Publish {topicData.Name()} Topic Data: Endpoint = {topicData.Endpoint()} | Key = {topicData.Key()} | Data = {data}")           
+                Services.EventGrid.PublishEvent(topicData.Endpoint(), topicData.Key(), "Humidity Changed Event", "HumidityChangedEvent", data)
             print(f"Humidity Sensor {args.sensor} | Humidity {details.Humidity()}")
     
 

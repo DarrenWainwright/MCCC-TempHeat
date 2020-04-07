@@ -60,7 +60,7 @@ eg_topics = Services.EventGrid.GetEventGridTopics(mgmt["azureTenantId"]
                                                     ,mgmt["azureClientSecret"]
                                                     ,mgmt["topicNames"])
 
-
+publish = config["eventGrid"]["enablePublish"]
 
 
 # difference constants
@@ -86,8 +86,9 @@ while True:
             data['temperature_f'] =  details.Temperature_F()
             print("Temperature Changed")
             topicData = eg_topics["Temperature"]
-            print(f"Publish {topicData.Name()} Topic Data: Endpoint = {topicData.Endpoint()} | Key = {topicData.Key()} | Data = {data}")
-            Services.EventGrid.PublishEvent(topicData.Endpoint(), topicData.Key(), "Temperature Changed Event", "TemperatureChangedEvent", data)
+            if publish == True:
+                print(f"Publish {topicData.Name()} Topic Data: Endpoint = {topicData.Endpoint()} | Key = {topicData.Key()} | Data = {data}")
+                Services.EventGrid.PublishEvent(topicData.Endpoint(), topicData.Key(), "Temperature Changed Event", "TemperatureChangedEvent", data)
             print(f"Temperature Sensor {args.sensor} | Temp {details.Temperature_C()}/c {details.Temperature_F()}/f")
     if details.Humidity() is not None:
         diff = humidityTracker - details.Humidity()
@@ -101,8 +102,9 @@ while True:
             data['humidity'] =  details.Humidity()
             print("Humidity Changed")
             topicData = eg_topics["Humidity"]
-            print(f"Publish {topicData.Name()} Topic Data: Endpoint = {topicData.Endpoint()} | Key = {topicData.Key()} | Data = {data}")           
-            Services.EventGrid.PublishEvent(topicData.Endpoint(), topicData.Key(), "Humidity Changed Event", "HumidityChangedEvent", data)
+            if publish == True:
+                print(f"Publish {topicData.Name()} Topic Data: Endpoint = {topicData.Endpoint()} | Key = {topicData.Key()} | Data = {data}")           
+                Services.EventGrid.PublishEvent(topicData.Endpoint(), topicData.Key(), "Humidity Changed Event", "HumidityChangedEvent", data)
             print(f"Humidity Sensor {args.sensor} | Humidity {details.Humidity()}")
     
 

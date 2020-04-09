@@ -1,5 +1,7 @@
 {
+    "heartbeat":60,
     "eventGrid":{
+        "enablePublish":false,
         "management":{  
             "azureClientId":"",
             "azureClientSecret":"",

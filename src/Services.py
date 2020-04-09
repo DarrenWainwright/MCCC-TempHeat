@@ -50,7 +50,6 @@ class EventGrid(object):
 
     class MCCCTopic(object):
         def __init__(self, topic, key, endpoint):
-            print(f"MCCC Topic. Name: {topic}, Key:{key}, Endpoint:{endpoint}")
             self._name = topic
             self._key = key
             self._endpoint = endpoint
@@ -132,7 +131,6 @@ class EventGrid(object):
                 endpoint,
                 events=events
             )
-            print("Published event") 
         except Exception as ex:
             print(ex)
             #TODO/ deal with this....

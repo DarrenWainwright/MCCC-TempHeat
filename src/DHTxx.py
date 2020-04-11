@@ -110,7 +110,7 @@ def Heartbeat(heartbeatTopic, sensor, name, config):
     while True:
         if publish == True:
             print(f"Publish {heartbeatTopic.Name()} Topic Data: Endpoint = {heartbeatTopic.Endpoint()} | Key = {heartbeatTopic.Key()} | Data = {data}")           
-            Services.EventGrid.PublishEvent(heartbeatTopic.Endpoint(), heartbeatTopic.Key(), "Humidity Changed Event", "HumidityChangedEvent", data)       
+            Services.EventGrid.PublishEvent(heartbeatTopic.Endpoint(), heartbeatTopic.Key(), "Heartbeat Event", "HeartbeatEvent", data)       
         else:
             print("* * Heartbeat * * ")
         time.sleep(secs)

@@ -102,9 +102,9 @@ def Heartbeat(heartbeatTopic, sensor, name, config):
     secs = config["heartbeat"]
     # Publish Event
     data = {}
-    data['sensor_id'] = sensor
+    data['type'] = 'DHT22'
     data['name'] = name
-
+    data['heartbeat_interval'] = secs
     publish = config["eventGrid"]["enablePublish"]
     
     while True:
